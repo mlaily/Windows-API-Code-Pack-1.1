@@ -61,6 +61,9 @@ namespace Microsoft.WindowsAPICodePack.Controls
         /// </summary>
         public IEnumerable<ShellObject> SelectedItems { get; private set; }
 
+        /// <summary>
+        /// Constructor for ExecutingDefaultCommandEventArgs,
+        /// </summary>
         public ExecutingDefaultCommandEventArgs(IEnumerable<ShellObject> selectedItems)
         {
             SelectedItems = new List<ShellObject>(selectedItems);
@@ -82,6 +85,10 @@ namespace Microsoft.WindowsAPICodePack.Controls
         /// </summary>
         public ShellObject ShellObject { get; private set; }
 
+        /// <summary>
+        /// Constructor for IncludingObjectEventArgs;
+        /// </summary>
+        /// <param name="shellObject"></param>
         public IncludingObjectEventArgs(ShellObject shellObject)
         {
             ShellObject = shellObject;
