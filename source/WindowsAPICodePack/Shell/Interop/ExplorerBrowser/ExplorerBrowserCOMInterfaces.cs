@@ -644,7 +644,7 @@ namespace Microsoft.WindowsAPICodePack.Controls
         // dlg1
         [PreserveSig]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        HResult OnDefaultCommand(IntPtr ppshv);
+        HResult OnDefaultCommand(IShellView ppshv);
 
         [PreserveSig]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
@@ -655,7 +655,7 @@ namespace Microsoft.WindowsAPICodePack.Controls
         [PreserveSig]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         HResult IncludeObject(
-            IntPtr ppshv,
+            IShellView ppshv,
             IntPtr pidl);
 
         // dlg2

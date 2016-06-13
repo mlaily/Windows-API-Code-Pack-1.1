@@ -1,6 +1,7 @@
 ﻿//Copyright (c) Microsoft Corporation.  All rights reserved.
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
@@ -215,6 +216,16 @@ namespace Microsoft.WindowsAPICodePack.Controls.WindowsForms
         /// This is not the same as SelectionChanged.
         /// </summary>
         public event EventHandler ViewSelectedItemChanged;
+
+        /// <summary>
+        /// Fires when an object is being included in the view.
+        /// </summary>
+        public event EventHandler<IncludingObjectEventArgs> IncludingObject;
+
+        /// <summary>
+        /// Fires when a user double-clicks in the view or presses the ENTER key.
+        /// </summary>
+        public event EventHandler<ExecutingDefaultCommandEventArgs> ExecutingDefaultCommand;
 
         #endregion
 
@@ -573,10 +584,54 @@ namespace Microsoft.WindowsAPICodePack.Controls.WindowsForms
         #endregion
 
         #region ICommDlgBrowser
-        HResult ICommDlgBrowser3.OnDefaultCommand(IntPtr ppshv)
+        HResult ICommDlgBrowser3.OnDefaultCommand(IShellView ppshv)
         {
-            return HResult.False;
-            //return HResult.Ok;
+            var handler = ExecutingDefaultCommand;
+            // We only do the work if we have subscribers
+            if (handler == null)
+            {
+                // Continue with default action.
+                return HResult.False;
+            }
+            else
+            {
+                // Warning: the current implementation only supports file system objects!
+                var folderView2 = ppshv as IFolderView2;
+                var selectedItems = new List<ShellObject>();
+
+                // Populate the selected items:
+                if (folderView2 != null)
+                {
+                    IShellItemArray selectedItemsArray;
+                    folderView2.GetSelection(true, out selectedItemsArray);
+
+                    uint selectedItemsCount;
+                    selectedItemsArray.GetCount(out selectedItemsCount);
+                    for (uint i = 0; i < selectedItemsCount; i++)
+                    {
+                        IShellItem item;
+                        selectedItemsArray.GetItemAt(i, out item);
+
+                        var shellObject = ShellObjectFactory.Create(item);
+
+                        selectedItems.Add(shellObject);
+                    }
+                }
+
+                var eventArgs = new ExecutingDefaultCommandEventArgs(selectedItems);
+
+                handler(this, eventArgs);
+
+                if (eventArgs.Cancel)
+                {
+                    // Prevent default action (opening the item).
+                    return HResult.Ok;
+                }
+                else
+                {
+                    return HResult.False;
+                }
+            }
         }
 
         HResult ICommDlgBrowser3.OnStateChange(IntPtr ppshv, CommDlgBrowserStateChange uChange)
@@ -589,8 +644,41 @@ namespace Microsoft.WindowsAPICodePack.Controls.WindowsForms
             return HResult.Ok;
         }
 
-        HResult ICommDlgBrowser3.IncludeObject(IntPtr ppshv, IntPtr pidl)
+        HResult ICommDlgBrowser3.IncludeObject(IShellView ppshv, IntPtr pidl)
         {
+            var handler = IncludingObject;
+            // We only do the work if we have subscribers
+            if (handler != null)
+            {
+                // Warning: the current implementation only supports file system objects!
+                var folderView2 = ppshv as IFolderView2;
+
+                var shellItemGuid = new Guid(ShellIIDGuid.IShellFolder);
+                object ppv = null;
+                folderView2?.GetFolder(ref shellItemGuid, out ppv);
+
+                var parent = ppv as IShellFolder;
+                if (parent != null)
+                {
+                    // Get the proper shell object from the relative pidl and the current folder
+
+                    IShellItem nativeShellItem;
+                    ShellNativeMethods.SHCreateShellItem(IntPtr.Zero, parent, pidl, out nativeShellItem);
+                    if (nativeShellItem != null)
+                    {
+                        var shellObject = ShellObjectFactory.Create(nativeShellItem);
+
+                        var eventArgs = new IncludingObjectEventArgs(shellObject);
+                        handler(this, eventArgs);
+
+                        if (eventArgs.Cancel)
+                        {
+                            return HResult.False;
+                        }
+                    }
+                }
+            }
+
             // items in the view have changed, so the collections need updating
             FireContentChanged();
 
