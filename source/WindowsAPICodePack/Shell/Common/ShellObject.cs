@@ -302,6 +302,31 @@ namespace Microsoft.WindowsAPICodePack.Shell
         }
 
         /// <summary>
+        /// Gets a value that determines if this ShellObject is a FileSystemAncestor.
+        /// </summary>
+        public bool IsFileSystemAncestor
+        {
+            get
+            {
+                try
+                {
+                    ShellNativeMethods.ShellFileGetAttributesOptions sfgao;
+                    NativeShellItem.GetAttributes(ShellNativeMethods.ShellFileGetAttributesOptions.FileSystemAncestor, out sfgao);
+                    return (sfgao & ShellNativeMethods.ShellFileGetAttributesOptions.FileSystemAncestor) != 0;
+                }
+                catch (FileNotFoundException)
+                {
+                    return false;
+                }
+                catch (NullReferenceException)
+                {
+                    // NativeShellItem is null
+                    return false;
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets a value that determines if this ShellObject is a file system object.
         /// </summary>
         public bool IsFileSystemObject
