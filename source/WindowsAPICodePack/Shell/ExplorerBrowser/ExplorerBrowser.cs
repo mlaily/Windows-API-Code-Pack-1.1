@@ -603,7 +603,7 @@ namespace Microsoft.WindowsAPICodePack.Controls.WindowsForms
                 if (folderView2 != null)
                 {
                     IShellItemArray selectedItemsArray;
-                    folderView2.GetSelection(true, out selectedItemsArray);
+                    folderView2.GetSelection(false, out selectedItemsArray);
 
                     uint selectedItemsCount;
                     selectedItemsArray.GetCount(out selectedItemsCount);
