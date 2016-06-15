@@ -602,19 +602,31 @@ namespace Microsoft.WindowsAPICodePack.Controls.WindowsForms
                 // Populate the selected items:
                 if (folderView2 != null)
                 {
-                    IShellItemArray selectedItemsArray;
-                    folderView2.GetSelection(false, out selectedItemsArray);
-
-                    uint selectedItemsCount;
-                    selectedItemsArray.GetCount(out selectedItemsCount);
-                    for (uint i = 0; i < selectedItemsCount; i++)
+                    IShellItemArray selectedItemsArray = null;
+                    HResult selectionResult;
+                    try
                     {
-                        IShellItem item;
-                        selectedItemsArray.GetItemAt(i, out item);
+                        selectionResult = folderView2.GetSelection(false, out selectedItemsArray);
+                    }
+                    catch (COMException comException) when (comException.ErrorCode == unchecked((int)0x80070490)) // Element not found.
+                    {
+                        // According to the documentation, this exception should not occur, but here we are...
+                        selectionResult = HResult.False;
+                    }
 
-                        var shellObject = ShellObjectFactory.Create(item);
+                    if (selectionResult == HResult.Ok)
+                    {
+                        uint selectedItemsCount;
+                        selectedItemsArray.GetCount(out selectedItemsCount);
+                        for (uint i = 0; i < selectedItemsCount; i++)
+                        {
+                            IShellItem item;
+                            selectedItemsArray.GetItemAt(i, out item);
 
-                        selectedItems.Add(shellObject);
+                            var shellObject = ShellObjectFactory.Create(item);
+
+                            selectedItems.Add(shellObject);
+                        }
                     }
                 }
 
