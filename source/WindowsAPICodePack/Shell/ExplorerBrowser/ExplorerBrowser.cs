@@ -605,6 +605,8 @@ namespace Microsoft.WindowsAPICodePack.Controls.WindowsForms
                     try
                     {
                         IShellItemArray selectedItemsArray;
+                        // According to the documentation, GetSelection()
+                        // should not throw an exception when the selection is empty, but it does...
                         if (folderView2.GetSelection(false, out selectedItemsArray) == HResult.Ok)
                         {
                             uint selectedItemsCount;
@@ -620,11 +622,10 @@ namespace Microsoft.WindowsAPICodePack.Controls.WindowsForms
                             }
                         }
                     }
-                    catch (COMException comException) when (comException.ErrorCode == unchecked((int)0x80070490)) // Element not found.
+                    catch (COMException comException) when (comException.ErrorCode == unchecked((int)0x80070490))
                     {
-                        // According to the documentation, this exception should not occur, but here we are...
+                        // Element not found.
                     }
-
                 }
 
                 var eventArgs = new ExecutingDefaultCommandEventArgs(selectedItems);
