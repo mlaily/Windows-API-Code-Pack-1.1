@@ -502,7 +502,7 @@ namespace Microsoft.WindowsAPICodePack.Controls
         void GetSelectedItem(int iStart, out int piItem);
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetSelection(bool fNoneImpliesFolder, out IShellItemArray ppsia);
+        HResult GetSelection(bool fNoneImpliesFolder, out IShellItemArray ppsia);
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void GetSelectionState(IntPtr pidl, out uint pdwFlags);

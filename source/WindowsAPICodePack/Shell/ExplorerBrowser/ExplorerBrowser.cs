@@ -602,19 +602,29 @@ namespace Microsoft.WindowsAPICodePack.Controls.WindowsForms
                 // Populate the selected items:
                 if (folderView2 != null)
                 {
-                    IShellItemArray selectedItemsArray;
-                    folderView2.GetSelection(false, out selectedItemsArray);
-
-                    uint selectedItemsCount;
-                    selectedItemsArray.GetCount(out selectedItemsCount);
-                    for (uint i = 0; i < selectedItemsCount; i++)
+                    try
                     {
-                        IShellItem item;
-                        selectedItemsArray.GetItemAt(i, out item);
+                        IShellItemArray selectedItemsArray;
+                        // According to the documentation, GetSelection()
+                        // should not throw an exception when the selection is empty, but it does...
+                        if (folderView2.GetSelection(false, out selectedItemsArray) == HResult.Ok)
+                        {
+                            uint selectedItemsCount;
+                            selectedItemsArray.GetCount(out selectedItemsCount);
+                            for (uint i = 0; i < selectedItemsCount; i++)
+                            {
+                                IShellItem item;
+                                selectedItemsArray.GetItemAt(i, out item);
 
-                        var shellObject = ShellObjectFactory.Create(item);
+                                var shellObject = ShellObjectFactory.Create(item);
 
-                        selectedItems.Add(shellObject);
+                                selectedItems.Add(shellObject);
+                            }
+                        }
+                    }
+                    catch (COMException comException) when (comException.ErrorCode == unchecked((int)0x80070490))
+                    {
+                        // Element not found.
                     }
                 }
 
