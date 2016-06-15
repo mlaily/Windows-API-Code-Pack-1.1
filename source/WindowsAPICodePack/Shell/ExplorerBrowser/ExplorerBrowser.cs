@@ -602,32 +602,29 @@ namespace Microsoft.WindowsAPICodePack.Controls.WindowsForms
                 // Populate the selected items:
                 if (folderView2 != null)
                 {
-                    IShellItemArray selectedItemsArray = null;
-                    HResult selectionResult;
                     try
                     {
-                        selectionResult = folderView2.GetSelection(false, out selectedItemsArray);
+                        IShellItemArray selectedItemsArray;
+                        if (folderView2.GetSelection(false, out selectedItemsArray) == HResult.Ok)
+                        {
+                            uint selectedItemsCount;
+                            selectedItemsArray.GetCount(out selectedItemsCount);
+                            for (uint i = 0; i < selectedItemsCount; i++)
+                            {
+                                IShellItem item;
+                                selectedItemsArray.GetItemAt(i, out item);
+
+                                var shellObject = ShellObjectFactory.Create(item);
+
+                                selectedItems.Add(shellObject);
+                            }
+                        }
                     }
                     catch (COMException comException) when (comException.ErrorCode == unchecked((int)0x80070490)) // Element not found.
                     {
                         // According to the documentation, this exception should not occur, but here we are...
-                        selectionResult = HResult.False;
                     }
 
-                    if (selectionResult == HResult.Ok)
-                    {
-                        uint selectedItemsCount;
-                        selectedItemsArray.GetCount(out selectedItemsCount);
-                        for (uint i = 0; i < selectedItemsCount; i++)
-                        {
-                            IShellItem item;
-                            selectedItemsArray.GetItemAt(i, out item);
-
-                            var shellObject = ShellObjectFactory.Create(item);
-
-                            selectedItems.Add(shellObject);
-                        }
-                    }
                 }
 
                 var eventArgs = new ExecutingDefaultCommandEventArgs(selectedItems);
