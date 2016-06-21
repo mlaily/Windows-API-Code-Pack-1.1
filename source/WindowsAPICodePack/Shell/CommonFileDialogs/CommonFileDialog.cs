@@ -670,6 +670,40 @@ namespace Microsoft.WindowsAPICodePack.Dialogs
             nativeDialog.SetOkButtonLabel(label);
         }
 
+        /// <summary>
+        /// Replaces the default text "Cancel" on the common file dialog's Cancel button.
+        /// </summary>
+        /// <param name="label"></param>
+        public void SetCancelButtonLabel(string label)
+        {
+            // Get our native dialog
+            if (nativeDialog == null)
+            {
+                InitializeNativeFileDialog();
+                nativeDialog = GetNativeFileDialog();
+            }
+            var asIFileDialog2 = nativeDialog as IFileDialog2;
+            if (asIFileDialog2 != null)
+            {
+                asIFileDialog2.SetCancelButtonLabel(label);
+            }
+        }
+
+        /// <summary>
+        /// Sets the text of the label next to the file name edit box.
+        /// </summary>
+        /// <param name="label"></param>
+        public void SetFileNameLabel(string label)
+        {
+            // Get our native dialog
+            if (nativeDialog == null)
+            {
+                InitializeNativeFileDialog();
+                nativeDialog = GetNativeFileDialog();
+            }
+            nativeDialog.SetFileNameLabel(label);
+        }
+
         #endregion
 
         #region Configuration
