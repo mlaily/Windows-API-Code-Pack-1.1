@@ -103,7 +103,8 @@ namespace MS.WindowsAPICodePack.Internal
         [DispId(ExplorerBrowserViewDispatchIds.ContentsChanged)]
         public void ViewContentsChanged()
         {
-            parent.FireContentChanged();
+            parent.FireItemsChanged();
+            parent.FireViewUpdated();
         }
 
         /// <summary>
