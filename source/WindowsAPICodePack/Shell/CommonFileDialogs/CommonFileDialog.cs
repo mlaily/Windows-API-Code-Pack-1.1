@@ -655,6 +655,21 @@ namespace Microsoft.WindowsAPICodePack.Dialogs
         /// </summary>
         public string DefaultFileName { get; set; }
 
+        /// <summary>
+        /// Sets the text of the Open or Save button.
+        /// </summary>
+        /// <param name="label"></param>
+        public void SetOkButtonLabel(string label)
+        {
+            // Get our native dialog
+            if (nativeDialog == null)
+            {
+                InitializeNativeFileDialog();
+                nativeDialog = GetNativeFileDialog();
+            }
+            nativeDialog.SetOkButtonLabel(label);
+        }
+
         #endregion
 
         #region Configuration
