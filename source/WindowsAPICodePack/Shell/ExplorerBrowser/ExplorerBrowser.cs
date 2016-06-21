@@ -183,9 +183,15 @@ namespace Microsoft.WindowsAPICodePack.Controls.WindowsForms
         public event EventHandler SelectionChanged;
 
         /// <summary>
-        /// Fires when the Items colection changes. 
+        /// Fires when the Items collection changes. 
         /// </summary>
         public event EventHandler ItemsChanged;
+
+        /// <summary>
+        /// Fires when the view has updated, either following a navigation event,
+        /// a refresh, or after changing the view settings (view mode...)
+        /// </summary>
+        public event EventHandler ViewUpdated;
 
         /// <summary>
         /// Fires when a navigation has been initiated, but is not yet complete.
@@ -559,9 +565,6 @@ namespace Microsoft.WindowsAPICodePack.Controls.WindowsForms
 
         HResult IExplorerBrowserEvents.OnNavigationComplete(IntPtr pidlFolder)
         {
-            // view mode may change 
-            ContentOptions.folderSettings.ViewMode = GetCurrentViewMode();
-
             if (NavigationComplete != null)
             {
                 NavigationCompleteEventArgs args = new NavigationCompleteEventArgs();
@@ -690,7 +693,7 @@ namespace Microsoft.WindowsAPICodePack.Controls.WindowsForms
             }
 
             // items in the view have changed, so the collections need updating
-            FireContentChanged();
+            FireItemsChanged();
 
             return HResult.Ok;
         }
@@ -978,35 +981,32 @@ namespace Microsoft.WindowsAPICodePack.Controls.WindowsForms
         #region view event forwarding
         internal void FireSelectionChanged()
         {
-            if (SelectionChanged != null)
-            {
-                SelectionChanged(this, EventArgs.Empty);
-            }
+            SelectionChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        internal void FireContentChanged()
+        internal void FireItemsChanged()
         {
-            if (ItemsChanged != null)
-            {
-                ItemsChanged.Invoke(this, EventArgs.Empty);
-            }
+            ItemsChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        internal void FireViewUpdated()
+        {
+            // view mode may change 
+            ContentOptions.folderSettings.ViewMode = GetCurrentViewMode();
+
+            ViewUpdated?.Invoke(this, EventArgs.Empty);
         }
 
         internal void FireContentEnumerationComplete()
         {
-            if (ViewEnumerationComplete != null)
-            {
-                ViewEnumerationComplete.Invoke(this, EventArgs.Empty);
-            }
+            ViewEnumerationComplete?.Invoke(this, EventArgs.Empty);
         }
 
         internal void FireSelectedItemChanged()
         {
-            if (ViewSelectedItemChanged != null)
-            {
-                ViewSelectedItemChanged.Invoke(this, EventArgs.Empty);
-            }
+            ViewSelectedItemChanged?.Invoke(this, EventArgs.Empty);
         }
+
         #endregion
 
         #endregion
