@@ -981,18 +981,12 @@ namespace Microsoft.WindowsAPICodePack.Controls.WindowsForms
         #region view event forwarding
         internal void FireSelectionChanged()
         {
-            if (SelectionChanged != null)
-            {
-                SelectionChanged(this, EventArgs.Empty);
-            }
+            SelectionChanged?.Invoke(this, EventArgs.Empty);
         }
 
         internal void FireItemsChanged()
         {
-            if (ItemsChanged != null)
-            {
-                ItemsChanged.Invoke(this, EventArgs.Empty);
-            }
+            ItemsChanged?.Invoke(this, EventArgs.Empty);
         }
 
         internal void FireViewUpdated()
@@ -1000,27 +994,19 @@ namespace Microsoft.WindowsAPICodePack.Controls.WindowsForms
             // view mode may change 
             ContentOptions.folderSettings.ViewMode = GetCurrentViewMode();
 
-            if (ViewUpdated != null)
-            {
-                ViewUpdated.Invoke(this, EventArgs.Empty);
-            }
+            ViewUpdated?.Invoke(this, EventArgs.Empty);
         }
 
         internal void FireContentEnumerationComplete()
         {
-            if (ViewEnumerationComplete != null)
-            {
-                ViewEnumerationComplete.Invoke(this, EventArgs.Empty);
-            }
+            ViewEnumerationComplete?.Invoke(this, EventArgs.Empty);
         }
 
         internal void FireSelectedItemChanged()
         {
-            if (ViewSelectedItemChanged != null)
-            {
-                ViewSelectedItemChanged.Invoke(this, EventArgs.Empty);
-            }
+            ViewSelectedItemChanged?.Invoke(this, EventArgs.Empty);
         }
+
         #endregion
 
         #endregion
