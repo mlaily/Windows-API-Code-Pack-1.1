@@ -8,6 +8,7 @@ namespace Microsoft.WindowsAPICodePack.Shell
         // IID GUID strings for relevant Shell COM interfaces.
         internal const string IModalWindow = "B4DB1657-70D7-485E-8E3E-6FCB5A5C1802";
         internal const string IFileDialog = "42F85136-DB7E-439C-85F1-E4075D135FC8";
+        internal const string IFileDialog2 = "61744fc7-85b5-4791-a9b0-272276309b13";
         internal const string IFileOpenDialog = "D57C7288-D4AD-4768-BE02-9D969532D960";
         internal const string IFileSaveDialog = "84BCCD23-5FDE-4CDB-AEA4-AF64B83D78AB";
         internal const string IFileDialogEvents = "973510DB-7D7F-452B-8975-74A85828D354";
