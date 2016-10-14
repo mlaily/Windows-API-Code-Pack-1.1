@@ -54,6 +54,25 @@ namespace Microsoft.WindowsAPICodePack.Controls
         }
 
         /// <summary>
+        /// Get the location that will be reached when navigating forward,
+        /// or null if the log cannot be navigated forward.
+        /// </summary>
+        public ShellObject ForwardDestination
+        {
+            get
+            {
+                if (CanNavigateForward)
+                {
+                    return _locations[currentLocationIndex + 1];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        /// <summary>
         /// Indicates the presence of locations in the log that can be 
         /// reached by calling Navigate(Backward)
         /// </summary>
@@ -62,6 +81,25 @@ namespace Microsoft.WindowsAPICodePack.Controls
             get
             {
                 return (CurrentLocationIndex > 0);
+            }
+        }
+
+        /// <summary>
+        /// Get the location that will be reached when navigating backward,
+        /// or null if the log cannot be navigated backward.
+        /// </summary>
+        public ShellObject BackwardDestination
+        {
+            get
+            {
+                if (CanNavigateBackward)
+                {
+                    return _locations[currentLocationIndex - 1];
+                }
+                else
+                {
+                    return null;
+                }
             }
         }
 
@@ -85,7 +123,6 @@ namespace Microsoft.WindowsAPICodePack.Controls
                 return currentLocationIndex;
             }
         }
-
 
         /// <summary>
         /// Gets the shell object in the Locations collection pointed to
