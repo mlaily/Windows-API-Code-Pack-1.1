@@ -62,6 +62,9 @@ namespace Microsoft.WindowsAPICodePack.Controls
                 folderSettings.Options = (FolderOptions)value | FolderOptions.UseSearchFolders | FolderOptions.NoWebView;
                 if (eb.explorerBrowserControl != null)
                 {
+                    // Keep the ViewMode in sync with the actual one to avoid reseting it each time we change the options
+                    // (Setting the ViewMode to 0 or another unused value seems to have the same effect, but is unfortunately not documented)
+                    folderSettings.ViewMode = eb.GetCurrentViewMode();
                     eb.explorerBrowserControl.SetFolderSettings(folderSettings);
                 }
             }
