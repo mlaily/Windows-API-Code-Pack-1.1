@@ -962,7 +962,7 @@ namespace Microsoft.WindowsAPICodePack.Controls.WindowsForms
             // 2. The flag doesn't seem to work anyway (tested on 7 and 8.1)
             // For reference: EXPLORER_BROWSER_OPTIONS https://msdn.microsoft.com/en-us/library/windows/desktop/bb762501(v=vs.85).aspx
 
-            IntPtr hwnd = WindowNativeMethods.FindWindowEx(Handle, IntPtr.Zero, "ExplorerBrowserControl", IntPtr.Zero);
+            IntPtr hwnd = WindowNativeMethods.FindWindowEx(Handle, IntPtr.Zero, "ExplorerBrowserControl", null);
             int explorerBrowserStyle = WindowNativeMethods.GetWindowLong(hwnd, (int)WindowLongFlags.GWL_STYLE);
             WindowNativeMethods.SetWindowLong(
                 hwnd,

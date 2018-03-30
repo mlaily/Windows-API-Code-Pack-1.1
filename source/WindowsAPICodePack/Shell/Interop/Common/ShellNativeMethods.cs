@@ -3,6 +3,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using MS.WindowsAPICodePack.Internal;
 
 namespace Microsoft.WindowsAPICodePack.Shell
 {
@@ -583,6 +584,9 @@ namespace Microsoft.WindowsAPICodePack.Shell
         internal static extern int PathParseIconLocation(
             [MarshalAs(UnmanagedType.LPWStr)] ref string pszIconFile);
 
+        [DllImport("shlwapi.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        internal static extern HResult IUnknown_QueryService(
+            IntPtr pUnk, ref Guid guidService, ref Guid riid, out IntPtr ppvOut);
 
         [DllImport("shell32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         internal static extern int SHCreateItemFromIDList(

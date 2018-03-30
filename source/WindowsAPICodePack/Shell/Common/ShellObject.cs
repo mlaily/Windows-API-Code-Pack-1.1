@@ -351,6 +351,31 @@ namespace Microsoft.WindowsAPICodePack.Shell
             }
         }
 
+        /// <summary>
+        /// Gets a value that determines if this ShellObject is a stream object.
+        /// </summary>
+        public bool IsStream
+        {
+            get
+            {
+                try
+                {
+                    ShellNativeMethods.ShellFileGetAttributesOptions sfgao;
+                    NativeShellItem.GetAttributes(ShellNativeMethods.ShellFileGetAttributesOptions.Stream, out sfgao);
+                    return (sfgao & ShellNativeMethods.ShellFileGetAttributesOptions.Stream) != 0;
+                }
+                catch (FileNotFoundException)
+                {
+                    return false;
+                }
+                catch (NullReferenceException)
+                {
+                    // NativeShellItem is null
+                    return false;
+                }
+            }
+        }
+
         private ShellThumbnail thumbnail;
         /// <summary>
         /// Gets the thumbnail of the ShellObject.
