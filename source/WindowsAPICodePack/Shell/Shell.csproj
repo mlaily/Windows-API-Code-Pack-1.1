@@ -150,6 +150,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommonFileDialogs\OpenFileOrFolderDialog.cs" />
     <Compile Include="Common\EnumUnknown.cs" />
     <Compile Include="Common\EventHandlerExtensionMethods.cs" />
     <Compile Include="Common\NativePoint.cs" />
@@ -200,8 +201,10 @@
     <Compile Include="ExplorerBrowser\NavigationOptions.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Interop\Common\IntPtrExtensions.cs" />
+    <Compile Include="Interop\Common\IOleWindowCOMInterface.cs" />
     <Compile Include="Interop\Common\ShellNativeStructs.cs" />
     <Compile Include="Interop\Common\WindowNativeMethods.cs" />
+    <Compile Include="Interop\Common\WndProcRetHookNativeMethods.cs" />
     <Compile Include="Interop\ShellObjectWatcher\ShellObjectWatcherNativeMethods.cs" />
     <Compile Include="PropertySystem\PropertySystemException.cs" />
     <Compile Include="Interop\StockIcons\StockIconsNativeMethods.cs" />

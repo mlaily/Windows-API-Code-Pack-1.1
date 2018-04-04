@@ -3,6 +3,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using MS.WindowsAPICodePack.Internal;
 
 namespace Microsoft.WindowsAPICodePack.Shell
 {
@@ -13,27 +14,93 @@ namespace Microsoft.WindowsAPICodePack.Shell
         [Flags]
         internal enum FileOpenOptions
         {
+            /// <summary>
+            /// When saving a file, prompt before overwriting an existing file of the same name. This is a default value for the Save dialog.
+            /// </summary>
             OverwritePrompt = 0x00000002,
+            /// <summary>
+            /// In the Save dialog, only allow the user to choose a file that has one of the file name extensions specified through IFileDialog::SetFileTypes.
+            /// </summary>
             StrictFileTypes = 0x00000004,
+            /// <summary>
+            /// Don't change the current working directory.
+            /// </summary>
             NoChangeDirectory = 0x00000008,
+            /// <summary>
+            /// Present an Open dialog that offers a choice of folders rather than files.
+            /// </summary>
             PickFolders = 0x00000020,
-            // Ensure that items returned are filesystem items.
+            /// <summary>
+            /// Ensures that returned items are file system items (SFGAO_FILESYSTEM). Note that this does not apply to items returned by IFileDialog::GetCurrentSelection.
+            /// </summary>
             ForceFilesystem = 0x00000040,
-            // Allow choosing items that have no storage.
+            /// <summary>
+            /// Enables the user to choose any item in the Shell namespace, not just those with SFGAO_STREAM or SFAGO_FILESYSTEM attributes.
+            /// This flag cannot be combined with FOS_FORCEFILESYSTEM.
+            /// </summary>
             AllNonStorageItems = 0x00000080,
+            /// <summary>
+            /// Do not check for situations that would prevent an application from opening the selected file, such as sharing violations or access denied errors.
+            /// </summary>
             NoValidate = 0x00000100,
+            /// <summary>
+            /// Enables the user to select multiple items in the open dialog. Note that when this flag is set, the IFileOpenDialog interface must be used to retrieve those items.
+            /// </summary>
             AllowMultiSelect = 0x00000200,
+            /// <summary>
+            /// The item returned must be in an existing folder. This is a default value.
+            /// </summary>
             PathMustExist = 0x00000800,
+            /// <summary>
+            /// The item returned must exist. This is a default value for the Open dialog.
+            /// </summary>
             FileMustExist = 0x00001000,
+            /// <summary>
+            /// Prompt for creation if the item returned in the save dialog does not exist. Note that this does not actually create the item.
+            /// </summary>
             CreatePrompt = 0x00002000,
+            /// <summary>
+            /// In the case of a sharing violation when an application is opening a file, call the application back through OnShareViolation for guidance.
+            /// This flag is overridden by FOS_NOVALIDATE.
+            /// </summary>
             ShareAware = 0x00004000,
+            /// <summary>
+            /// Do not return read-only items. This is a default value for the Save dialog.
+            /// </summary>
             NoReadOnlyReturn = 0x00008000,
+            /// <summary>
+            /// Do not test whether creation of the item as specified in the Save dialog will be successful.
+            /// If this flag is not set, the calling application must handle errors, such as denial of access, discovered when the item is created.
+            /// </summary>
             NoTestFileCreate = 0x00010000,
+            /// <summary>
+            /// Hide the list of places from which the user has recently opened or saved items. This value is not supported as of Windows 7.
+            /// </summary>
             HideMruPlaces = 0x00020000,
+            /// <summary>
+            /// Hide items shown by default in the view's navigation pane. This flag is often used in conjunction with the IFileDialog::AddPlace method,
+            /// to hide standard locations and replace them with custom locations.
+            /// - Windows 7 and later: Hide all of the standard namespace locations (such as Favorites, Libraries, Computer, and Network) shown in the navigation pane.
+            /// - Windows Vista: Hide the contents of the Favorite Links tree in the navigation pane. Note that the category itself is still displayed, but shown as empty.
+            /// </summary>
             HidePinnedPlaces = 0x00040000,
+            /// <summary>
+            /// Shortcuts should not be treated as their target items. This allows an application to open a .lnk file rather than what that file is a shortcut to.
+            /// </summary>
             NoDereferenceLinks = 0x00100000,
+            /// <summary>
+            /// Do not add the item being opened or saved to the recent documents list (SHAddToRecentDocs).
+            /// </summary>
             DontAddToRecent = 0x02000000,
+            /// <summary>
+            /// Include hidden and system items.
+            /// </summary>
             ForceShowHidden = 0x10000000,
+            /// <summary>
+            /// Indicates to the Save As dialog box that it should open in expanded mode.
+            /// Expanded mode is the mode that is set and unset by clicking the button in the lower-left corner of the Save As dialog box that switches between Browse Folders and Hide Folders when clicked.
+            /// This value is not supported as of Windows 7.
+            /// </summary>
             DefaultNoMiniMode = 0x20000000
         }
         internal enum ControlState
@@ -517,6 +584,9 @@ namespace Microsoft.WindowsAPICodePack.Shell
         internal static extern int PathParseIconLocation(
             [MarshalAs(UnmanagedType.LPWStr)] ref string pszIconFile);
 
+        [DllImport("shlwapi.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        internal static extern HResult IUnknown_QueryService(
+            IntPtr pUnk, ref Guid guidService, ref Guid riid, out IntPtr ppvOut);
 
         [DllImport("shell32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         internal static extern int SHCreateItemFromIDList(
