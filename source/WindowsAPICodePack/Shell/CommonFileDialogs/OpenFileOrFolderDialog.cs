@@ -48,7 +48,7 @@ namespace Microsoft.WindowsAPICodePack.Dialogs
 
         /// <summary>
         /// This event is called when the user tries to validate a selection.
-        /// It allows to set a selection as invalid, and replace the selected files and folders with filtered values.
+        /// It allows to set a selection as invalid, and replaces the selected files and folders with filtered values.
         /// </summary>
         public event EventHandler<ValidateSelectionEventArgs> ValidateSelection;
 
@@ -262,30 +262,39 @@ namespace Microsoft.WindowsAPICodePack.Dialogs
 
             List<ShellObject> GetFilteredSelection(IEnumerable<ShellObject> selection, out bool hasInvalidItems)
             {
-                bool IsInvalid(ShellObject obj, ref bool isInvalidAmongItems)
+                bool IsInvalid(ShellObject obj)
                 {
                     // According to the documentation of ShellNativeMethods.FileOpenOptions.AllNonStorageItems,
                     // the dialog default is to allow items with either FileSystem or Stream attributes to be returned.
-                    var isInvalid = obj == null || !(obj.IsFileSystemObject || obj.IsStream);
-                    if (isInvalid)
-                    {
-                        // Only override the value if true, never set it to false.
-                        isInvalidAmongItems = true;
-                    }
-                    return isInvalid;
+                    return obj == null || !(obj.IsFileSystemObject || obj.IsStream);
                 }
 
                 var result = new List<ShellObject>();
                 hasInvalidItems = false;
                 foreach (var item in selection)
                 {
-                    if (!IsInvalid(item, ref hasInvalidItems))
+                    if (IsInvalid(item))
                     {
-                        var dereferencedItem = ShouldDereference(item) ? GetShellLinkTarget(item) : item;
-                        // If the user selects a shortcut that points to an invalid item, we consider the selection as invalid.
-                        if (!IsInvalid(dereferencedItem, ref hasInvalidItems))
+                        hasInvalidItems = true;
+                    }
+                    else
+                    {
+                        if (ShouldDereference(item))
                         {
-                            result.Add(dereferencedItem);
+                            var dereferencedItem = GetShellLinkTarget(item);
+                            // If the user selects a shortcut that points to an invalid item, we consider the selection as invalid.
+                            if (IsInvalid(dereferencedItem))
+                            {
+                                hasInvalidItems = true;
+                            }
+                            else
+                            {
+                                result.Add(dereferencedItem);
+                            }
+                        }
+                        else
+                        {
+                            result.Add(item);
                         }
                     }
                 }
@@ -386,7 +395,7 @@ namespace Microsoft.WindowsAPICodePack.Dialogs
                 WindowNativeMethods.GetWindowRect(fileNameLabel, out var fileNameLabelSize);
 
                 // https://stackoverflow.com/questions/18034975/how-do-i-find-position-of-a-win32-control-window-relative-to-its-parent-window
-                const int pointsCount = 2;// 1 is for points, 2 for rects
+                const int pointsCount = 2; // 1 is for points, 2 for rects
                 WindowNativeMethods.MapWindowPoints(IntPtr.Zero, dialogWindowHandle, ref okButtonSize, pointsCount);
                 WindowNativeMethods.MapWindowPoints(IntPtr.Zero, dialogWindowHandle, ref cancelButtonSize, pointsCount);
                 WindowNativeMethods.MapWindowPoints(IntPtr.Zero, dialogWindowHandle, ref customValidationButtonSize, pointsCount);
@@ -409,9 +418,9 @@ namespace Microsoft.WindowsAPICodePack.Dialogs
             // Hide controls we don't want to use:
 
             WindowNativeMethods.SetWindowPos(fileNameCombBox, IntPtr.Zero, 0, 0, 0, 0,
-                SetWindowPosFlags.SWP_NOZORDER | SetWindowPosFlags.SWP_NOSIZE | SetWindowPosFlags.SWP_HIDEWINDOW);
+                SetWindowPosFlags.SWP_NOZORDER | SetWindowPosFlags.SWP_NOMOVE | SetWindowPosFlags.SWP_NOSIZE | SetWindowPosFlags.SWP_HIDEWINDOW);
             WindowNativeMethods.SetWindowPos(fileNameLabel, IntPtr.Zero, 0, 0, 0, 0,
-                 SetWindowPosFlags.SWP_NOZORDER | SetWindowPosFlags.SWP_NOSIZE | SetWindowPosFlags.SWP_HIDEWINDOW);
+                 SetWindowPosFlags.SWP_NOZORDER | SetWindowPosFlags.SWP_NOMOVE | SetWindowPosFlags.SWP_NOSIZE | SetWindowPosFlags.SWP_HIDEWINDOW);
 
             // Not sure why, but moving the ok button up increases the explorer view height.
             // The explorer view then follows the window when it resizes, as desired.
@@ -419,7 +428,7 @@ namespace Microsoft.WindowsAPICodePack.Dialogs
                 okButton, IntPtr.Zero, okButtonSize.Left, okButtonSize.Top - comboBoxMaxHeight, 0, 0,
                 SetWindowPosFlags.SWP_NOZORDER | SetWindowPosFlags.SWP_NOSIZE | SetWindowPosFlags.SWP_HIDEWINDOW);
 
-            // Now the only thing we need to to regarding the dialog layout,
+            // Now the only thing we need to do regarding the dialog layout,
             // is moving our custom validation button closer to the cancel button, where the ok button is supposed to be.
             // Unfortunately, to do it properly, we have to hook into the dialog message loop
             // so that we can readjust the button position if the form is resized, and its layout recomputed.
@@ -492,8 +501,8 @@ namespace Microsoft.WindowsAPICodePack.Dialogs
 
             foreach (var shellItem in _userFilteredSelection)
             {
-                shellItems?.Add(shellItem.NativeShellItem);
                 names?.Add(GetFileNameFromShellItem(shellItem.NativeShellItem));
+                shellItems?.Add(shellItem.NativeShellItem);
             }
         }
 
@@ -541,7 +550,7 @@ namespace Microsoft.WindowsAPICodePack.Dialogs
             => Selection = selection;
 
         /// <summary>
-        /// The provided collection will be as the return value of the dialog instead of the original selection.
+        /// The provided collection will be used as the return value of the dialog instead of the original selection.
         /// </summary>
         /// <param name="filteredSelection"></param>
         public void OverrideSelection(IEnumerable<ShellObject> filteredSelection)

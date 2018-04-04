@@ -79,10 +79,10 @@ namespace Microsoft.WindowsAPICodePack.Shell.Interop.Common
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetWindowRect(IntPtr hwnd, [Out] out NativeRect rect);
 
-        [DllImport("user32", ExactSpelling = true, SetLastError = true)]
+        [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
         public static extern int MapWindowPoints(IntPtr hWndFrom, IntPtr hWndTo, [In, Out] ref NativeRect rect, [MarshalAs(UnmanagedType.U4)] int cPoints);
 
-        [DllImport("user32", ExactSpelling = true, SetLastError = true)]
+        [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
         public static extern int MapWindowPoints(IntPtr hWndFrom, IntPtr hWndTo, [In, Out] ref System.Drawing.Point pt, [MarshalAs(UnmanagedType.U4)] int cPoints);
     }
 
